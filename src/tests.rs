@@ -30,9 +30,9 @@ mod common {
     use super::*;
 
     /// Creates a `DebouncedInputPin<MockInputPin, A>`.
-    pub fn create_pin<A>() -> DebouncedInputPin<MockInputPin, A> {
+    pub fn create_pin<A>(activeness: A) -> DebouncedInputPin<MockInputPin, A> {
         let pin = MockInputPin::default();
-        DebouncedInputPin::new(pin)
+        DebouncedInputPin::new(pin, activeness)
     }
 }
 
@@ -47,7 +47,7 @@ mod input_pin {
 
         #[test]
         fn it_updates_the_counter() {
-            let mut pin = create_pin::<ActiveHigh>();
+            let mut pin = create_pin(ActiveHigh);
             pin.pin.state = true;
             assert_eq!(pin.counter, 0);
             pin.update();
@@ -56,7 +56,7 @@ mod input_pin {
 
         #[test]
         fn it_goes_high_when_counter_full() {
-            let mut pin = create_pin::<ActiveHigh>();
+            let mut pin = create_pin(ActiveHigh);
             pin.pin.state = true;
             pin.counter = 10;
             assert!(pin.is_low());
@@ -67,7 +67,7 @@ mod input_pin {
 
         #[test]
         fn it_resets_the_counter_and_state_on_low() {
-            let mut pin = create_pin::<ActiveHigh>();
+            let mut pin = create_pin(ActiveHigh);
             pin.pin.state = false;
             pin.counter = 10;
             pin.state = true;
@@ -79,7 +79,7 @@ mod input_pin {
 
         #[test]
         fn it_is_high_when_its_state_is_true_and_vice_versa() {
-            let mut pin = create_pin::<ActiveHigh>();
+            let mut pin = create_pin(ActiveHigh);
             pin.state = true;
             assert_eq!(pin.is_high(), pin.state);
             pin.state = false;
@@ -98,7 +98,7 @@ mod input_pin {
 
         #[test]
         fn it_updates_the_counter() {
-            let mut pin = create_pin::<ActiveLow>();
+            let mut pin = create_pin(ActiveLow);
             pin.pin.state = false;
             assert_eq!(pin.counter, 0);
             pin.update();
@@ -107,7 +107,7 @@ mod input_pin {
 
         #[test]
         fn it_goes_high_when_counter_full() {
-            let mut pin = create_pin::<ActiveLow>();
+            let mut pin = create_pin(ActiveLow);
             pin.pin.state = false;
             pin.counter = 10;
             assert!(pin.is_low());
@@ -118,7 +118,7 @@ mod input_pin {
 
         #[test]
         fn it_resets_the_counter_and_state_on_high() {
-            let mut pin = create_pin::<ActiveLow>();
+            let mut pin = create_pin(ActiveLow);
             pin.pin.state = true;
             pin.counter = 10;
             pin.state = true;
@@ -130,7 +130,7 @@ mod input_pin {
 
         #[test]
         fn it_is_high_when_its_state_is_true_and_vice_versa() {
-            let mut pin = create_pin::<ActiveLow>();
+            let mut pin = create_pin(ActiveLow);
             pin.state = true;
             assert_eq!(pin.is_high(), pin.state);
             pin.state = false;
