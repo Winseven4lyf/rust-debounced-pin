@@ -9,6 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `DebouncedInputPin` struct.
+- `DebouncedInputPin` struct and tests.
 - Changelog, readme and licenses.
 - Travis CI config.

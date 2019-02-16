@@ -90,6 +90,4 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
 }
 
 #[cfg(test)]
-mod tests {
-    // TODO implement tests
-}
+mod tests;
