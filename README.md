@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Winseven4lyf/rust-debounced-pin.svg)](https://travis-ci.org/Winseven4lyf/rust-debounced-pin)
 [![Crate](https://img.shields.io/crates/v/debounced-pin.svg)](https://crates.io/crates/debounced-pin)
+[![Docs](https://docs.rs/debounced-pin/badge.svg)](https://docs.rs/debounced-pin)
 
 Adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
 
