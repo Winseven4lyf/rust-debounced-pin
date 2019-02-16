@@ -12,7 +12,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-debounced-pin = "0.1.0"
+debounced-pin = "0.1.1"
 ```
 
 This crate currently requires [`embedded-hal`] to be built using the `unproven` feature, for access to the `InputPin` trait.

@@ -33,7 +33,7 @@ pub struct DebouncedInputPin<T: InputPin, A> {
 
 impl<T: InputPin, A> DebouncedInputPin<T, A> {
     /// Initializes a new debounced input pin.
-    pub fn new(pin: T) -> Self {
+    pub fn new(pin: T, _activeness: A) -> Self {
         DebouncedInputPin {
             pin,
             activeness: PhantomData,
