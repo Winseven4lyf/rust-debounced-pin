@@ -16,9 +16,7 @@ pub struct ActiveHigh;
 /// Implements approach 1 from [here](http://www.labbookpages.co.uk/electronics/debounce.html#soft)
 /// ([archived 2018-09-03](https://web.archive.org/web/20180903142143/http://www.labbookpages.co.uk/electronics/debounce.html#soft)).
 ///
-/// Requires [`update()`] to be called every ~1ms.
-///
-/// [`update()`]: #method.update
+/// Requires `update()` to be called every ~1ms.
 pub struct DebouncedInputPin<T: InputPin, A> {
     /// The wrapped pin.
     pub pin: T,
@@ -33,10 +31,7 @@ pub struct DebouncedInputPin<T: InputPin, A> {
     state: bool,
 }
 
-impl<T, A> DebouncedInputPin<T, A>
-where
-    T: InputPin,
-{
+impl<T: InputPin, A> DebouncedInputPin<T, A> {
     /// Initializes a new debounced input pin.
     pub fn new(pin: T) -> Self {
         DebouncedInputPin {
@@ -48,10 +43,7 @@ where
     }
 }
 
-impl<T, A> InputPin for DebouncedInputPin<T, A>
-where
-    T: InputPin,
-{
+impl<T: InputPin, A> InputPin for DebouncedInputPin<T, A> {
     fn is_high(&self) -> bool {
         self.state
     }
@@ -61,13 +53,10 @@ where
     }
 }
 
-impl<T> DebouncedInputPin<T, ActiveHigh>
-where
-    T: InputPin,
-{
+impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
     /// Updates the debounce logic.
     ///
-    /// Should be called every ~1ms.
+    /// Needs to be called every ~1ms.
     pub fn update(&mut self) {
         if self.pin.is_low() {
             self.counter = 0;
@@ -82,13 +71,10 @@ where
     }
 }
 
-impl<T> DebouncedInputPin<T, ActiveLow>
-where
-    T: InputPin,
-{
+impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
     /// Updates the debounce logic.
     ///
-    /// Should be called every ~1ms.
+    /// Needs to be called every ~1ms.
     pub fn update(&mut self) {
         if self.pin.is_high() {
             self.counter = 0;
