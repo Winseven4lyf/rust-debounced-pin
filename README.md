@@ -21,9 +21,9 @@ This crate currently requires [`embedded-hal`] to be built using the `unproven` 
 
 This project is licensed under either of
 
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
+- Apache License, Version 2.0 ([`LICENSE-APACHE`](LICENSE-APACHE) or
   [online](https://www.apache.org/licenses/LICENSE-2.0))
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or
+- MIT License ([`LICENSE-MIT`](LICENSE-MIT) or
   [online](https://opensource.org/licenses/MIT))
 
 at your option.
