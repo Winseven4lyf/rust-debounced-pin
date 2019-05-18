@@ -1,11 +1,16 @@
 use crate::DebouncedInputPin;
 use common::*;
-use embedded_hal::digital::InputPin;
+use embedded_hal::digital::v2::InputPin;
+use failure::Fail;
 use mocks::*;
 
 /// Mock implementations.
 mod mocks {
     use super::*;
+
+    #[derive(Debug, Fail)]
+    #[fail(display = "An error occured")]
+    pub struct MockInputPinError;
 
     /// A mock implementation of `InputPin`.
     #[derive(Default)]
@@ -15,12 +20,14 @@ mod mocks {
     }
 
     impl InputPin for MockInputPin {
-        fn is_high(&self) -> bool {
-            self.state
+        type Error = MockInputPinError;
+
+        fn is_high(&self) -> Result<bool, MockInputPinError> {
+            Ok(self.state)
         }
 
-        fn is_low(&self) -> bool {
-            !self.state
+        fn is_low(&self) -> Result<bool, MockInputPinError> {
+            Ok(!self.state)
         }
     }
 }
@@ -46,48 +53,52 @@ mod input_pin {
         use crate::ActiveHigh; // Not importing `ActiveHigh` further up the chain to prevent mistakes.
 
         #[test]
-        fn it_updates_the_counter() {
+        fn it_updates_the_counter() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveHigh);
             pin.pin.state = true;
             assert_eq!(pin.counter, 0);
-            pin.update();
+            pin.update()?;
             assert_eq!(pin.counter, 1);
+            Ok(())
         }
 
         #[test]
-        fn it_goes_high_when_counter_full() {
+        fn it_goes_high_when_counter_full() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveHigh);
             pin.pin.state = true;
             pin.counter = 10;
-            assert!(pin.is_low());
-            pin.update();
+            assert!(pin.is_low()?);
+            pin.update()?;
             assert_eq!(pin.counter, 10);
-            assert!(pin.is_high());
+            assert!(pin.is_high()?);
+            Ok(())
         }
 
         #[test]
-        fn it_resets_the_counter_and_state_on_low() {
+        fn it_resets_the_counter_and_state_on_low() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveHigh);
             pin.pin.state = false;
             pin.counter = 10;
             pin.state = true;
-            assert!(pin.is_high());
-            pin.update();
-            assert!(pin.is_low());
+            assert!(pin.is_high()?);
+            pin.update()?;
+            assert!(pin.is_low()?);
             assert_eq!(pin.counter, 0);
+            Ok(())
         }
 
         #[test]
-        fn it_is_high_when_its_state_is_true_and_vice_versa() {
+        fn it_is_high_when_its_state_is_true_and_vice_versa() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveHigh);
             pin.state = true;
-            assert_eq!(pin.is_high(), pin.state);
+            assert_eq!(pin.is_high()?, pin.state);
             pin.state = false;
-            assert_eq!(pin.is_high(), pin.state);
+            assert_eq!(pin.is_high()?, pin.state);
             pin.state = true;
-            assert_eq!(pin.is_low(), !pin.state);
+            assert_eq!(pin.is_low()?, !pin.state);
             pin.state = false;
-            assert_eq!(pin.is_low(), !pin.state);
+            assert_eq!(pin.is_low()?, !pin.state);
+            Ok(())
         }
     }
 
@@ -97,48 +108,52 @@ mod input_pin {
         use crate::ActiveLow; // Not importing `ActiveLow` further up the chain to prevent mistakes.
 
         #[test]
-        fn it_updates_the_counter() {
+        fn it_updates_the_counter() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveLow);
             pin.pin.state = false;
             assert_eq!(pin.counter, 0);
-            pin.update();
+            pin.update()?;
             assert_eq!(pin.counter, 1);
+            Ok(())
         }
 
         #[test]
-        fn it_goes_high_when_counter_full() {
+        fn it_goes_high_when_counter_full() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveLow);
             pin.pin.state = false;
             pin.counter = 10;
-            assert!(pin.is_low());
-            pin.update();
+            assert!(pin.is_low()?);
+            pin.update()?;
             assert_eq!(pin.counter, 10);
-            assert!(pin.is_high());
+            assert!(pin.is_high()?);
+            Ok(())
         }
 
         #[test]
-        fn it_resets_the_counter_and_state_on_high() {
+        fn it_resets_the_counter_and_state_on_high() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveLow);
             pin.pin.state = true;
             pin.counter = 10;
             pin.state = true;
-            assert!(pin.is_high());
-            pin.update();
-            assert!(pin.is_low());
+            assert!(pin.is_high()?);
+            pin.update()?;
+            assert!(pin.is_low()?);
             assert_eq!(pin.counter, 0);
+            Ok(())
         }
 
         #[test]
-        fn it_is_high_when_its_state_is_true_and_vice_versa() {
+        fn it_is_high_when_its_state_is_true_and_vice_versa() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveLow);
             pin.state = true;
-            assert_eq!(pin.is_high(), pin.state);
+            assert_eq!(pin.is_high()?, pin.state);
             pin.state = false;
-            assert_eq!(pin.is_high(), pin.state);
+            assert_eq!(pin.is_high()?, pin.state);
             pin.state = true;
-            assert_eq!(pin.is_low(), !pin.state);
+            assert_eq!(pin.is_low()?, !pin.state);
             pin.state = false;
-            assert_eq!(pin.is_low(), !pin.state);
+            assert_eq!(pin.is_low()?, !pin.state);
+            Ok(())
         }
     }
 }

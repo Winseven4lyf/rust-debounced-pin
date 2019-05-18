@@ -3,7 +3,7 @@
 #![cfg_attr(not(test), no_std)]
 
 use core::marker::PhantomData;
-use embedded_hal::digital::InputPin;
+use embedded_hal::digital::v2::InputPin;
 
 /// Unit struct for active-low pins.
 pub struct ActiveLow;
@@ -44,12 +44,14 @@ impl<T: InputPin, A> DebouncedInputPin<T, A> {
 }
 
 impl<T: InputPin, A> InputPin for DebouncedInputPin<T, A> {
-    fn is_high(&self) -> bool {
-        self.state
+    type Error = T::Error;
+
+    fn is_high(&self) -> Result<bool, Self::Error> {
+        Ok(self.state)
     }
 
-    fn is_low(&self) -> bool {
-        !self.state
+    fn is_low(&self) -> Result<bool, Self::Error> {
+        Ok(!self.state)
     }
 }
 
@@ -57,8 +59,8 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(&mut self) {
-        if self.pin.is_low() {
+    pub fn update(&mut self) -> Result<(), <DebouncedInputPin<T, ActiveHigh> as InputPin>::Error> {
+        if self.pin.is_low()? {
             self.counter = 0;
             self.state = false;
         } else if self.counter < 10 {
@@ -68,6 +70,8 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
         if self.counter == 10 {
             self.state = true;
         }
+
+        Ok(())
     }
 }
 
@@ -75,8 +79,8 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(&mut self) {
-        if self.pin.is_high() {
+    pub fn update(&mut self) -> Result<(), <DebouncedInputPin<T, ActiveLow> as InputPin>::Error> {
+        if self.pin.is_high()? {
             self.counter = 0;
             self.state = false;
         } else if self.counter < 10 {
@@ -86,6 +90,8 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
         if self.counter == 10 {
             self.state = true;
         }
+
+        Ok(())
     }
 }
 

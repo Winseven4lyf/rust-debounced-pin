@@ -1,10 +1,10 @@
 [package]
 name = "debounced-pin"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Quinn Johnson <winseven4lyf@gmail.com>"]
 edition = "2018"
 description = """
-Adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
+Adds a wrapper for an InputPin that debounces it's is_high() and is_low() methods.
 """
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -18,3 +18,8 @@ travis-ci = { repository = "Winseven4lyf/rust-debounced-pin" }
 [dependencies.embedded-hal]
 version = "0.2.2"
 features = ["unproven"]
+
+[dev-dependencies.failure]
+version = "0.1.5"
+default-features = false
+features = ["derive"]
