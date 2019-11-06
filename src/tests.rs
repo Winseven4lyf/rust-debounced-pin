@@ -118,14 +118,14 @@ mod input_pin {
         }
 
         #[test]
-        fn it_goes_high_when_counter_full() -> Result<(), MockInputPinError> {
+        fn it_goes_low_when_counter_full() -> Result<(), MockInputPinError> {
             let mut pin = create_pin(ActiveLow);
             pin.pin.state = false;
             pin.counter = 10;
-            assert!(pin.is_low()?);
+            assert!(pin.is_high()?);
             pin.update()?;
             assert_eq!(pin.counter, 10);
-            assert!(pin.is_high()?);
+            assert!(pin.is_low()?);
             Ok(())
         }
 
@@ -134,10 +134,10 @@ mod input_pin {
             let mut pin = create_pin(ActiveLow);
             pin.pin.state = true;
             pin.counter = 10;
-            pin.state = true;
-            assert!(pin.is_high()?);
-            pin.update()?;
+            pin.state = false;
             assert!(pin.is_low()?);
+            pin.update()?;
+            assert!(pin.is_high()?);
             assert_eq!(pin.counter, 0);
             Ok(())
         }

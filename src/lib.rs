@@ -27,7 +27,7 @@ pub struct DebouncedInputPin<T: InputPin, A> {
     /// The counter.
     counter: i8,
 
-    /// The debounced state.
+    /// The debounced pin state.
     state: bool,
 }
 
@@ -82,13 +82,13 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
     pub fn update(&mut self) -> Result<(), <DebouncedInputPin<T, ActiveLow> as InputPin>::Error> {
         if self.pin.is_high()? {
             self.counter = 0;
-            self.state = false;
+            self.state = true;
         } else if self.counter < 10 {
             self.counter += 1;
         }
 
         if self.counter == 10 {
-            self.state = true;
+            self.state = false;
         }
 
         Ok(())
