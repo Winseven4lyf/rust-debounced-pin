@@ -47,7 +47,7 @@ pub struct DebouncedInputPin<T: InputPin, A> {
 impl<T: InputPin, A> DebouncedInputPin<T, A> {
     /// Initializes a new debounced input pin.
     pub fn new(pin: T, _activeness: A) -> Self {
-        DebouncedInputPin {
+        Self {
             pin,
             activeness: PhantomData,
             counter: 0,
@@ -60,9 +60,7 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(
-        &mut self,
-    ) -> Result<DebounceState, <DebouncedInputPin<T, ActiveHigh> as InputPin>::Error> {
+    pub fn update(&mut self) -> Result<DebounceState, <Self as InputPin>::Error> {
         if self.pin.is_low()? {
             if self.debounce_state == DebounceState::Active {
                 self.counter = 0;
@@ -86,9 +84,7 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(
-        &mut self,
-    ) -> Result<DebounceState, <DebouncedInputPin<T, ActiveLow> as InputPin>::Error> {
+    pub fn update(&mut self) -> Result<DebounceState, <Self as InputPin>::Error> {
         if self.pin.is_high()? {
             if self.debounce_state == DebounceState::Active {
                 self.counter = 0;

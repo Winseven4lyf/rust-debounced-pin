@@ -10,7 +10,7 @@ mod mocks {
     use super::*;
 
     #[derive(Debug, Fail)]
-    #[fail(display = "An error occured")]
+    #[fail(display = "An error occurred")]
     pub struct MockInputPinError;
 
     /// A mock implementation of `InputPin`.
