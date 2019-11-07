@@ -1,6 +1,6 @@
 //! Adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
 
-#![cfg_attr(not(test), no_std)]
+#![no_std]
 
 use core::marker::PhantomData;
 use embedded_hal::digital::v2::InputPin;
