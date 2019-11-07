@@ -1,3 +1,4 @@
+use crate::DebounceState;
 use crate::DebouncedInputPin;
 use common::*;
 use embedded_hal::digital::v2::InputPin;
@@ -100,6 +101,19 @@ mod input_pin {
             assert_eq!(pin.is_low()?, !pin.state);
             Ok(())
         }
+
+        #[test]
+        fn it_returns_expected_state_when_calling_update() -> Result<(), MockInputPinError> {
+            let mut pin = create_pin(ActiveHigh);
+
+            pin.pin.state = false;
+            assert!(pin.update()? == DebounceState::Reset);
+            pin.pin.state = true;
+            assert!(pin.update()? == DebounceState::Debouncing);
+            pin.counter = 10;
+            assert!(pin.update()? == DebounceState::Active);
+            Ok(())
+        }
     }
 
     /// Tests for `DebouncedInputPin<T, ActiveLow>`.
@@ -153,6 +167,19 @@ mod input_pin {
             assert_eq!(pin.is_low()?, !pin.state);
             pin.state = false;
             assert_eq!(pin.is_low()?, !pin.state);
+            Ok(())
+        }
+
+        #[test]
+        fn it_returns_expected_state_when_calling_update() -> Result<(), MockInputPinError> {
+            let mut pin = create_pin(ActiveLow);
+
+            pin.pin.state = true;
+            assert!(pin.update()? == DebounceState::Reset);
+            pin.pin.state = false;
+            assert!(pin.update()? == DebounceState::Debouncing);
+            pin.counter = 10;
+            assert!(pin.update()? == DebounceState::Active);
             Ok(())
         }
     }
