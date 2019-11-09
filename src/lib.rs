@@ -56,6 +56,16 @@ impl<T: InputPin, A> InputPin for DebouncedInputPin<T, A> {
 }
 
 impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
+    /// Initializes a new `ActiveHigh` debounced input pin.
+    pub fn active_high(pin: T) -> Self {
+        Self {
+            pin,
+            activeness: PhantomData,
+            counter: 0,
+            state: false,
+        }
+    }
+
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
@@ -76,6 +86,15 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
 }
 
 impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
+    /// Initializes a new `ActiveLow` debounced input pin.
+    pub fn active_low(pin: T) -> Self {
+        Self {
+            pin,
+            activeness: PhantomData,
+            counter: 0,
+            state: true,
+        }
+    }
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
