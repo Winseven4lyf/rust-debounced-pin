@@ -4,9 +4,16 @@
 [![Crate](https://img.shields.io/crates/v/debounced-pin.svg)](https://crates.io/crates/debounced-pin)
 [![Docs](https://docs.rs/debounced-pin/badge.svg)](https://docs.rs/debounced-pin)
 
-Adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
+A platform-agnostic debounce library.
 
-## Usage
+This library provides an `update()` method to debounce a pin.
+
+Implements approach 1 from [here](http://www.labbookpages.co.uk/electronics/debounce.html#soft)
+([archived 2018-09-03](https://web.archive.org/web/20180903142143/http://www.labbookpages.co.uk/electronics/debounce.html#soft)).
+
+It also adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
+
+## Installation
 
 Add this to your `Cargo.toml`:
 

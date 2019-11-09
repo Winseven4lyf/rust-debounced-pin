@@ -1,4 +1,55 @@
-//! Adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
+//! A platform-agnostic debounce library.
+//!
+//! This library provides an `update()` method to debounce a pin.
+//!
+//! Implements approach 1 from [here](http://www.labbookpages.co.uk/electronics/debounce.html#soft)
+//! ([archived 2018-09-03](https://web.archive.org/web/20180903142143/http://www.labbookpages.co.uk/electronics/debounce.html#soft)).
+//!
+//! It also adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
+//!
+//! # Implementation
+//!
+//! The `InputPin` wrapper checks **only** the debounced state.
+//! It does not poll the pin and drives the debouncing poll implementation forward.
+//! To do this, you have to call `update()`. At best call it every 1 ms in an ISR.
+//!
+//! # Example
+//!
+//! For better exmaples checkout the [examples](https://github.com/Winseven4lyf/rust-debounced-pin/tree/master/examples) in the repository
+//!
+//! ```rust,ignore
+//! use debounced_pin::prelude::*;
+//! use debounced_pin::ActiveHigh;
+//!
+//! // This is up to the implementation details of the embedded_hal you are using.
+//! let pin: InputPin = hal_function_which_returns_input_pin();
+//!
+//! let pin = DebouncedInputPin::new(pin, ActiveHigh);
+//!
+//! loop {
+//!     match pin.update()? {
+//!         // Pin is not active
+//!         DebounceState::NotActive => break,
+//!         // Pin was reset or is not active in general
+//!         DebounceState::Reset => break,
+//!         // Pin is active but still debouncing
+//!         DebounceState::Debouncing => continue,
+//!         // Pin is active and debounced.
+//!         DebounceState::Active => break,
+//!     }
+//!     // Wait to poll again in 1 millisecond
+//!     // Also hardware specific
+//!     wait(1.ms());
+//! }
+//!
+//! // If the debounce state is DebounceState::Active
+//! // this returns true and the code gets executed,
+//! // else this false.
+//! if pin.is_high()? {
+//!     // Do something with it
+//!     break;
+//! }
+//! ```
 
 #![no_std]
 
