@@ -25,3 +25,15 @@ features = ["unproven"]
 version = "0.1.5"
 default-features = false
 features = ["derive"]
+
+[dev-dependencies]
+cortex-m = "0.6.1"
+cortex-m-rt = "0.6.10"
+panic-semihosting = "0.5.3"
+stm32f3xx-hal = { version = "0.3.0", features = ["rt", "unproven", "stm32f303"] }
+
+[[example]]
+name = "debounce_input_pin"
+
+[[example]]
+name = "debounce_state"
