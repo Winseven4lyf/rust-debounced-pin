@@ -12,12 +12,14 @@ pub struct ActiveLow;
 pub struct ActiveHigh;
 
 /// The debounce state of the `update()` method
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy)]
 pub enum DebounceState {
     /// The pin state is active, but not debounced
     Debouncing,
-    /// The pin state is not active, the counter is reset
+    /// The counter was reset
     Reset,
+    /// The pin state is not active
+    NotActive,
     /// The pin state is active and debounced
     Active,
 }
@@ -35,11 +37,11 @@ pub struct DebouncedInputPin<T: InputPin, A> {
     /// Whether the pin is active-high or active-low.
     activeness: PhantomData<A>,
 
+    /// The debounced pin state.
+    debounce_state: DebounceState,
+
     /// The counter.
     counter: i8,
-
-    /// The debounced state.
-    state: bool,
 }
 
 impl<T: InputPin, A> DebouncedInputPin<T, A> {
@@ -49,20 +51,8 @@ impl<T: InputPin, A> DebouncedInputPin<T, A> {
             pin,
             activeness: PhantomData,
             counter: 0,
-            state: false,
+            debounce_state: DebounceState::NotActive,
         }
-    }
-}
-
-impl<T: InputPin, A> InputPin for DebouncedInputPin<T, A> {
-    type Error = T::Error;
-
-    fn is_high(&self) -> Result<bool, Self::Error> {
-        Ok(self.state)
-    }
-
-    fn is_low(&self) -> Result<bool, Self::Error> {
-        Ok(!self.state)
     }
 }
 
@@ -70,19 +60,25 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(&mut self) -> Result<DebounceState, <DebouncedInputPin<T, ActiveHigh> as InputPin>::Error> {
+    pub fn update(
+        &mut self,
+    ) -> Result<DebounceState, <DebouncedInputPin<T, ActiveHigh> as InputPin>::Error> {
         if self.pin.is_low()? {
-            self.counter = 0;
-            self.state = false;
-            Ok(DebounceState::Reset)
+            if self.debounce_state == DebounceState::Active {
+                self.counter = 0;
+                self.debounce_state = DebounceState::Reset;
+            } else {
+                self.debounce_state = DebounceState::NotActive;
+            }
         } else if self.counter < 10 {
             self.counter += 1;
-            Ok(DebounceState::Debouncing)
+            self.debounce_state = DebounceState::Debouncing;
         } else {
             // Max count is reached
-            self.state = true;
-            Ok(DebounceState::Active)
+            self.debounce_state = DebounceState::Active;
         }
+
+        Ok(self.debounce_state)
     }
 }
 
@@ -90,19 +86,49 @@ impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(&mut self) -> Result<DebounceState, <DebouncedInputPin<T, ActiveLow> as InputPin>::Error> {
+    pub fn update(
+        &mut self,
+    ) -> Result<DebounceState, <DebouncedInputPin<T, ActiveLow> as InputPin>::Error> {
         if self.pin.is_high()? {
-            self.counter = 0;
-            self.state = false;
-            Ok(DebounceState::Reset)
+            if self.debounce_state == DebounceState::Active {
+                self.counter = 0;
+                self.debounce_state = DebounceState::Reset;
+            } else {
+                self.debounce_state = DebounceState::NotActive;
+            }
         } else if self.counter < 10 {
             self.counter += 1;
-            Ok(DebounceState::Debouncing)
+            self.debounce_state = DebounceState::Debouncing;
         } else {
             // Max count is reached
-            self.state = true;
-            Ok(DebounceState::Active)
+            self.debounce_state = DebounceState::Active;
         }
+
+        Ok(self.debounce_state)
+    }
+}
+
+impl<T: InputPin> InputPin for DebouncedInputPin<T, ActiveHigh> {
+    type Error = T::Error;
+
+    fn is_high(&self) -> Result<bool, Self::Error> {
+        Ok(self.debounce_state == DebounceState::Active)
+    }
+
+    fn is_low(&self) -> Result<bool, Self::Error> {
+        Ok(self.debounce_state != DebounceState::Active)
+    }
+}
+
+impl<T: InputPin> InputPin for DebouncedInputPin<T, ActiveLow> {
+    type Error = T::Error;
+
+    fn is_high(&self) -> Result<bool, Self::Error> {
+        Ok(self.debounce_state != DebounceState::Active)
+    }
+
+    fn is_low(&self) -> Result<bool, Self::Error> {
+        Ok(self.debounce_state == DebounceState::Active)
     }
 }
 
