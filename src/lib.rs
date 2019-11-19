@@ -12,7 +12,7 @@ pub struct ActiveLow;
 pub struct ActiveHigh;
 
 /// The debounce state of the `update()` method
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub enum DebounceState {
     /// The pin state is active, but not debounced
     Debouncing,
