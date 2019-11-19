@@ -2,6 +2,8 @@
 
 #![no_std]
 
+pub mod prelude;
+
 use core::marker::PhantomData;
 use embedded_hal::digital::v2::InputPin;
 

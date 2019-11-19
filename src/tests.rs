@@ -1,6 +1,4 @@
-use crate::Debounce;
-use crate::DebounceState;
-use crate::DebouncedInputPin;
+use crate::prelude::*;
 use common::*;
 use embedded_hal::digital::v2::InputPin;
 use failure::Fail;
