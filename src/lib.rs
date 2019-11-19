@@ -62,6 +62,11 @@ impl<T: InputPin, A> DebouncedInputPin<T, A> {
             debounce_state: DebounceState::NotActive,
         }
     }
+
+    /// Check if the pin debounce state is active
+    pub fn is_active(&self) -> bool {
+        self.debounce_state == DebounceState::Active
+    }
 }
 
 impl<T: InputPin> Debounce for DebouncedInputPin<T, ActiveHigh> {
