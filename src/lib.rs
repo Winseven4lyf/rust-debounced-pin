@@ -44,6 +44,14 @@ pub struct DebouncedInputPin<T: InputPin, A> {
     counter: i8,
 }
 
+/// Debounce Trait which provides and update method which debounces the pin
+pub trait Debounce {
+    type Error;
+    type State;
+
+    fn update(&mut self) -> Result<Self::State, Self::Error>;
+}
+
 impl<T: InputPin, A> DebouncedInputPin<T, A> {
     /// Initializes a new debounced input pin.
     pub fn new(pin: T, _activeness: A) -> Self {
@@ -56,48 +64,54 @@ impl<T: InputPin, A> DebouncedInputPin<T, A> {
     }
 }
 
-impl<T: InputPin> DebouncedInputPin<T, ActiveHigh> {
+impl<T: InputPin> Debounce for DebouncedInputPin<T, ActiveHigh> {
+    type Error = T::Error;
+    type State = DebounceState;
+
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(&mut self) -> Result<DebounceState, <Self as InputPin>::Error> {
+    fn update(&mut self) -> Result<Self::State, Self::Error> {
         if self.pin.is_low()? {
-            if self.debounce_state == DebounceState::Active {
+            if self.debounce_state == Self::State::Active {
                 self.counter = 0;
-                self.debounce_state = DebounceState::Reset;
+                self.debounce_state = Self::State::Reset;
             } else {
-                self.debounce_state = DebounceState::NotActive;
+                self.debounce_state = Self::State::NotActive;
             }
         } else if self.counter < 10 {
             self.counter += 1;
-            self.debounce_state = DebounceState::Debouncing;
+            self.debounce_state = Self::State::Debouncing;
         } else {
             // Max count is reached
-            self.debounce_state = DebounceState::Active;
+            self.debounce_state = Self::State::Active;
         }
 
         Ok(self.debounce_state)
     }
 }
 
-impl<T: InputPin> DebouncedInputPin<T, ActiveLow> {
+impl<T: InputPin> Debounce for DebouncedInputPin<T, ActiveLow> {
+    type Error = T::Error;
+    type State = DebounceState;
+
     /// Updates the debounce logic.
     ///
     /// Needs to be called every ~1ms.
-    pub fn update(&mut self) -> Result<DebounceState, <Self as InputPin>::Error> {
+    fn update(&mut self) -> Result<Self::State, Self::Error> {
         if self.pin.is_high()? {
-            if self.debounce_state == DebounceState::Active {
+            if self.debounce_state == Self::State::Active {
                 self.counter = 0;
-                self.debounce_state = DebounceState::Reset;
+                self.debounce_state = Self::State::Reset;
             } else {
-                self.debounce_state = DebounceState::NotActive;
+                self.debounce_state = Self::State::NotActive;
             }
         } else if self.counter < 10 {
             self.counter += 1;
-            self.debounce_state = DebounceState::Debouncing;
+            self.debounce_state = Self::State::Debouncing;
         } else {
             // Max count is reached
-            self.debounce_state = DebounceState::Active;
+            self.debounce_state = Self::State::Active;
         }
 
         Ok(self.debounce_state)
