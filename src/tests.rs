@@ -99,6 +99,12 @@ mod input_pin {
             pin.debounce_state = DebounceState::NotActive;
             assert_eq!(pin.is_high()?, false);
             assert_eq!(pin.is_low()?, true);
+            pin.debounce_state = DebounceState::Debouncing;
+            assert_eq!(pin.is_high()?, false);
+            assert_eq!(pin.is_low()?, true);
+            pin.debounce_state = DebounceState::Reset;
+            assert_eq!(pin.is_high()?, false);
+            assert_eq!(pin.is_low()?, true);
             Ok(())
         }
 
@@ -167,6 +173,12 @@ mod input_pin {
             assert_eq!(pin.is_high()?, false);
             assert_eq!(pin.is_low()?, true);
             pin.debounce_state = DebounceState::NotActive;
+            assert_eq!(pin.is_high()?, true);
+            assert_eq!(pin.is_low()?, false);
+            pin.debounce_state = DebounceState::Debouncing;
+            assert_eq!(pin.is_high()?, true);
+            assert_eq!(pin.is_low()?, false);
+            pin.debounce_state = DebounceState::Reset;
             assert_eq!(pin.is_high()?, true);
             assert_eq!(pin.is_low()?, false);
             Ok(())
