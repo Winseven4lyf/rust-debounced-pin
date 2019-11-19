@@ -130,6 +130,22 @@ mod input_pin {
             assert_eq!(pin.is_active(), false);
             Ok(())
         }
+
+        #[test]
+        fn it_returns_active_states_when_polling() -> Result<(), MockInputPinError> {
+            let mut pin = create_pin();
+
+            assert_eq!(pin.update()?, DebounceState::NotActive);
+            pin.pin.state = true;
+            for _ in 0..10 {
+                assert_eq!(pin.update()?, DebounceState::Debouncing);
+            }
+            assert_eq!(pin.update()?, DebounceState::Active);
+            pin.pin.state = false;
+            assert_eq!(pin.update()?, DebounceState::Reset);
+            assert_eq!(pin.update()?, DebounceState::NotActive);
+            Ok(())
+        }
     }
 
     /// Tests for `DebouncedInputPin<T, ActiveLow>`.
@@ -224,6 +240,22 @@ mod input_pin {
             assert_eq!(pin.is_active(), false);
             pin.debounce_state = DebounceState::Reset;
             assert_eq!(pin.is_active(), false);
+            Ok(())
+        }
+
+        #[test]
+        fn it_returns_active_states_when_polling() -> Result<(), MockInputPinError> {
+            let mut pin = create_pin();
+
+            assert_eq!(pin.update()?, DebounceState::NotActive);
+            pin.pin.state = false;
+            for _ in 0..10 {
+                assert_eq!(pin.update()?, DebounceState::Debouncing);
+            }
+            assert_eq!(pin.update()?, DebounceState::Active);
+            pin.pin.state = true;
+            assert_eq!(pin.update()?, DebounceState::Reset);
+            assert_eq!(pin.update()?, DebounceState::NotActive);
             Ok(())
         }
     }
