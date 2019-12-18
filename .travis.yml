@@ -1,9 +1,13 @@
 language: rust
 rust:
-  - stable
-  - beta
-  - nightly
+    - stable
+    - beta
+    - nightly
 matrix:
-  allow_failures:
-    - rust: nightly
-  fast_finish: true
+    allow_failures:
+        - rust: nightly
+    fast_finish: true
+script:
+    - rustup target add thumbv7em-none-eabihf
+    - cargo test --verbose
+    - cargo build --examples --verbose --target thumbv7em-none-eabihf

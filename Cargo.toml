@@ -4,7 +4,9 @@ version = "0.2.0"
 authors = ["Quinn Johnson <winseven4lyf@gmail.com>"]
 edition = "2018"
 description = """
-Adds a wrapper for an InputPin that debounces it's is_high() and is_low() methods.
+A platform-agnostic debounce library.
+
+It also adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
 """
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -16,10 +18,22 @@ repository = "https://github.com/Winseven4lyf/rust-debounced-pin"
 travis-ci = { repository = "Winseven4lyf/rust-debounced-pin" }
 
 [dependencies.embedded-hal]
-version = "0.2.2"
+version = "0.2.3"
 features = ["unproven"]
 
 [dev-dependencies.failure]
-version = "0.1.5"
+version = "0.1.6"
 default-features = false
 features = ["derive"]
+
+[dev-dependencies]
+cortex-m = "0.6.1"
+cortex-m-rt = "0.6.10"
+panic-semihosting = "0.5.3"
+stm32f3xx-hal = { version = "0.3.0", features = ["rt", "unproven", "stm32f303"] }
+
+[[example]]
+name = "debounce_input_pin"
+
+[[example]]
+name = "debounce_state"
