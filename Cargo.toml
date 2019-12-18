@@ -1,6 +1,6 @@
 [package]
 name = "debounced-pin"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Quinn Johnson <winseven4lyf@gmail.com>"]
 edition = "2018"
 description = """

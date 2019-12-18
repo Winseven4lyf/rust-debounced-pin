@@ -5,17 +5,19 @@
 //! Implements approach 1 from [here](http://www.labbookpages.co.uk/electronics/debounce.html#soft)
 //! ([archived 2018-09-03](https://web.archive.org/web/20180903142143/http://www.labbookpages.co.uk/electronics/debounce.html#soft)).
 //!
-//! It also adds a wrapper for an `InputPin` that debounces it's `is_high()` and `is_low()` methods.
+//! It also adds a wrapper for an `InputPin` that debounces it's
+//! `is_high()` and `is_low()` methods.
 //!
 //! # Implementation
 //!
 //! The `InputPin` wrapper checks **only** the debounced state.
 //! It does not poll the pin and drives the debouncing poll implementation forward.
-//! To do this, you have to call `update()`. At best call it every 1 ms in an ISR.
+//! To do this, you have to call `update()`. At best call it every 1ms in an ISR.
 //!
 //! # Example
 //!
-//! For better exmaples checkout the [examples](https://github.com/Winseven4lyf/rust-debounced-pin/tree/master/examples) in the repository
+//! For examples check the [examples](https://github.com/Winseven4lyf/rust-debounced-pin/tree/master/examples)
+//! directory in the repository.
 //!
 //! ```rust,ignore
 //! use debounced_pin::prelude::*;
@@ -28,17 +30,16 @@
 //!
 //! loop {
 //!     match pin.update()? {
-//!         // Pin is not active
+//!         // Pin is not active.
 //!         DebounceState::NotActive => break,
-//!         // Pin was reset or is not active in general
+//!         // Pin was reset or is not active in general.
 //!         DebounceState::Reset => break,
-//!         // Pin is active but still debouncing
+//!         // Pin is active but still debouncing.
 //!         DebounceState::Debouncing => continue,
 //!         // Pin is active and debounced.
 //!         DebounceState::Active => break,
 //!     }
-//!     // Wait to poll again in 1 millisecond
-//!     // Also hardware specific
+//!     // Wait to poll again in 1ms. Also hardware specific.
 //!     wait(1.ms());
 //! }
 //!
@@ -64,16 +65,16 @@ pub struct ActiveLow;
 /// Unit struct for active-high pins.
 pub struct ActiveHigh;
 
-/// The debounce state of the `update()` method
+/// The debounce state of the `update()` method.
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub enum DebounceState {
-    /// The pin state is active, but not debounced
+    /// The pin state is active, but not debounced.
     Debouncing,
-    /// The counter was reset
+    /// The counter was reset.
     Reset,
-    /// The pin state is not active
+    /// The pin state is not active.
     NotActive,
-    /// The pin state is active and debounced
+    /// The pin state is active and debounced.
     Active,
 }
 
@@ -97,7 +98,7 @@ pub struct DebouncedInputPin<T: InputPin, A> {
     counter: i8,
 }
 
-/// Debounce Trait which provides and update method which debounces the pin
+/// Debounce Trait which provides an `update()` method which debounces the pin.
 pub trait Debounce {
     type Error;
     type State;
@@ -116,7 +117,7 @@ impl<T: InputPin, A> DebouncedInputPin<T, A> {
         }
     }
 
-    /// Check if the pin debounce state is active
+    /// Checks if the pin debounce state is active.
     pub fn is_active(&self) -> bool {
         self.debounce_state == DebounceState::Active
     }
