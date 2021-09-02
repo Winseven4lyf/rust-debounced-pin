@@ -57,7 +57,7 @@
 pub mod prelude;
 
 use core::marker::PhantomData;
-use embedded_hal::digital::v2::InputPin;
+use embedded_hal::digital::InputPin;
 
 /// Unit struct for active-low pins.
 pub struct ActiveLow;
@@ -131,7 +131,7 @@ impl<T: InputPin> Debounce for DebouncedInputPin<T, ActiveHigh> {
     ///
     /// Needs to be called every ~1ms.
     fn update(&mut self) -> Result<Self::State, Self::Error> {
-        if self.pin.is_low()? {
+        if self.pin.try_is_low()? {
             if self.debounce_state == Self::State::Active {
                 self.counter = 0;
                 self.debounce_state = Self::State::Reset;
@@ -158,7 +158,7 @@ impl<T: InputPin> Debounce for DebouncedInputPin<T, ActiveLow> {
     ///
     /// Needs to be called every ~1ms.
     fn update(&mut self) -> Result<Self::State, Self::Error> {
-        if self.pin.is_high()? {
+        if self.pin.try_is_high()? {
             if self.debounce_state == Self::State::Active {
                 self.counter = 0;
                 self.debounce_state = Self::State::Reset;
@@ -180,11 +180,11 @@ impl<T: InputPin> Debounce for DebouncedInputPin<T, ActiveLow> {
 impl<T: InputPin> InputPin for DebouncedInputPin<T, ActiveHigh> {
     type Error = T::Error;
 
-    fn is_high(&self) -> Result<bool, Self::Error> {
+    fn try_is_high(&self) -> Result<bool, Self::Error> {
         Ok(self.debounce_state == DebounceState::Active)
     }
 
-    fn is_low(&self) -> Result<bool, Self::Error> {
+    fn try_is_low(&self) -> Result<bool, Self::Error> {
         Ok(self.debounce_state != DebounceState::Active)
     }
 }
@@ -192,11 +192,11 @@ impl<T: InputPin> InputPin for DebouncedInputPin<T, ActiveHigh> {
 impl<T: InputPin> InputPin for DebouncedInputPin<T, ActiveLow> {
     type Error = T::Error;
 
-    fn is_high(&self) -> Result<bool, Self::Error> {
+    fn try_is_high(&self) -> Result<bool, Self::Error> {
         Ok(self.debounce_state != DebounceState::Active)
     }
 
-    fn is_low(&self) -> Result<bool, Self::Error> {
+    fn try_is_low(&self) -> Result<bool, Self::Error> {
         Ok(self.debounce_state == DebounceState::Active)
     }
 }
